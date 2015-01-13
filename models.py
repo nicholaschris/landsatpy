@@ -10,7 +10,7 @@ import numpy as np
 from osgeo import gdal
 from netCDF4 import Dataset
 
-from mtl_parser import parse_mtl
+from utils import parse_mtl
 
 class DirectoryModel():
 
@@ -197,7 +197,10 @@ class NetcdfVarModel(FileModel):
         self.var_name = var_name
         self.variables_list = []
         self.cropping = cropping
-    
+
+    def setup_var(self):
+        self.full_path_var = os.path.join(self.dir_name, self.lc + self.path + self.row + self.time + self.misc+'_'+self.var_name+ '.nc')
+
     def connect_to_nc(self):
         # print("Connecting to NetCDF file")
         self.hit += 1
