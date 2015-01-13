@@ -1,17 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Oct 24 10:45:36 2014
-
-@author: Nicholas
-"""
-
 import operator
 import pandas as pd
 import numpy as np
 from numpy import ma
 from scipy.misc import imresize
 import scipy.ndimage as ndimage
-# from scipy.ndimage.interpolation import zoom as imresize
 from skimage.morphology import disk, dilation
 
 def get_truth(input_one, input_two, comparison): # too much abstraction
@@ -58,13 +50,9 @@ def interp_and_resize(array, new_length):
 
     y = round(interp_factor_y * orig_y_length)
     x = round(interp_factor_x * orig_x_length)
-    # If you're not familiar with mgrid: 
     # http://docs.scipy.org/doc/numpy/reference/generated/numpy.mgrid.html
     new_indicies = np.mgrid[0:orig_y_length:y * 1j, 0:orig_x_length:x * 1j]
-
-    # order=1 indicates bilinear interpolation. Default is 3 (cubic interpolation)
-    # We're also indicating the output array's dtype should be the same as the 
-    # original array's. Otherwise, a new float array would be created.
+    # order=1 indicates bilinear interpolation.
     interp_array = ndimage.map_coordinates(array, new_indicies, 
                                            order=1, output=array.dtype)
     interp_array = interp_array.reshape((y, x))
