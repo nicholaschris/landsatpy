@@ -26,6 +26,7 @@ time = config.time
 band_option = config.band_option
 b = band_option
 
+qa_clouds = [61440, 59424, 57344, 56320, 53248, 39936, 36896, 36864]
 # Scene = models.NetcdfModel(data_dir, path, row, time)
 # Scene = models.NetcdfVarModel(data_dir, path, row, time, 'rtoa_1373')
 
@@ -84,6 +85,9 @@ def get_cirrus():
 
 def get_temp():
     return get_var('BT_B10')
+
+def get_bqa():
+    return get_var('bqa')
 
 # print(Scene.get_variables_list())
 
@@ -254,12 +258,12 @@ def land_threshold():
     print(land_threshold)
     return land_threshold
 
-def pcl_cond_one():
-    condition_one = np.logical_and.reduce((calc_pcp(), water_test(), (cloud_prob_water()>0.5)))
+def pcl_cond_one(pcp):
+    condition_one = np.logical_and.reduce((pcp, water_test(), (cloud_prob_water()>0.5)))
     return condition_one
     
-def pcl_cond_two():
-    condition_two = np.logical_and.reduce((calc_pcp_short(),
+def pcl_cond_two(pcp):
+    condition_two = np.logical_and.reduce((pcp,
                                            np.invert(water_test()),
                                            (cloud_prob_land()>land_threshold())))
     return condition_two
@@ -280,9 +284,9 @@ def pcl_cond_four():
     t_low = utils.calculate_percentile(csl_bt, 17.5)
     return (btc < (t_low - 35))
     
-def calc_pcl():
-    condition_one = pcl_cond_one()
-    condition_two = pcl_cond_two()
+def calc_pcl(pcp):
+    condition_one = pcl_cond_one(pcp)
+    condition_two = pcl_cond_two(pcp)
     condition_three = pcl_cond_three()
     condition_four = pcl_cond_four()
     condition_five = pcl_cond_five()
@@ -302,10 +306,10 @@ def buffer_pcl(pcl):
     return dilated
 
 if __name__ == "__main__":
-    img = views.create_composite(get_red(), get_blue(), get_blue())
+    img_scaled = views.create_composite(get_red(), get_green(), get_blue())
     pcp = calc_pcp()
     water = water_test()
-    pcl = calc_pcl()
+    pcl = calc_pcl(pcp)
     bpcl = utils.dilate_boolean_array(pcl)
     # # pcs = calc_pcs()
     # utils.save_object(pcp, Scene.dir_name+ '/' +str(Scene.cropping)+ config.band_option + 'pcp.pkl')

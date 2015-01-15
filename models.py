@@ -1,16 +1,14 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Oct 23 14:40:53 2014
-
-@author: Nicholas
-"""
-
 import os
 import numpy as np
 from osgeo import gdal
 from netCDF4 import Dataset
+import imp
+import utils
+
+imp.reload(utils)
 
 from utils import parse_mtl
+
 
 class DirectoryModel():
 
