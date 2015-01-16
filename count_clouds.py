@@ -12,6 +12,7 @@ from skimage import morphology
 from scipy.ndimage import measurements
 # from fmask import calc_pcp, calc_pcl, buffer_pcl
 from cloud_detection import calc_pcp
+from math import pi
 
 def label_clouds(pcp, opening_selem, closing_selem):
     # img = buffer_pcl()

@@ -30,6 +30,7 @@ qa_clouds = [61440, 59424, 57344, 56320, 53248, 39936, 36896, 36864]
 # Scene = models.NetcdfModel(data_dir, path, row, time)
 # Scene = models.NetcdfVarModel(data_dir, path, row, time, 'rtoa_1373')
 
+
 def get_var_before_mask(var):
     Scene = models.NetcdfVarModel(data_dir, path, row, time, var)
     # return utils.interp_and_resize(Scene.data(var), 2048)
@@ -307,10 +308,10 @@ def buffer_pcl(pcl):
 
 if __name__ == "__main__":
     img_scaled = views.create_composite(get_red(), get_green(), get_blue())
-    pcp = calc_pcp()
-    water = water_test()
-    pcl = calc_pcl(pcp)
-    bpcl = utils.dilate_boolean_array(pcl)
+    # pcp = calc_pcp()
+    # water = water_test()
+    # pcl = calc_pcl(pcp)
+    # bpcl = utils.dilate_boolean_array(pcl)
     # # pcs = calc_pcs()
     # utils.save_object(pcp, Scene.dir_name+ '/' +str(Scene.cropping)+ config.band_option + 'pcp.pkl')
     # utils.save_object(pcl, Scene.dir_name+ '/' +str(Scene.cropping)+ config.band_option +'pcl.pkl')
