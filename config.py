@@ -23,10 +23,10 @@
 # row = '024'
 # time = '2013232'
 
-data_dir = "Documents/data/"
-path = '199'
-row = '024'
-time = '2013280'
+# data_dir = "Documents/data/"
+# path = '199'
+# row = '024'
+# time = '2013280'
 
 # data_dir = "Documents/data/"
 # path = '196'
@@ -38,6 +38,15 @@ time = '2013280'
 # row = '054'
 # time = '2013154'
 
-band_option = 'rrc_'
+# data_dir = "Documents/data/"
+# path = '200'
+# row = '024'
+# time = '2014258'
 
+data_dir = "Documents/data/"
+path = '199'
+row = '024'
+time = '2013280'
+band_option = 'rhow_'
+# band_option = 'rrc_'
 # band_option = 'rtoa_'

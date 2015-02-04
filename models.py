@@ -128,16 +128,17 @@ class NetcdfModel(FileModel):
         self.variables_list = []
         self.cropping = cropping
     
-    def connect_to_nc(self):
+    def connect_to_nc(self, dims = False):
         # print("Connecting to NetCDF file")
         self.hit += 1
         # print("You have hit the NetCDF file %d times" % self.hit)
         self.nc = Dataset(self.full_path, 'r')
-        self.dimensions = self.nc.dimensions
-        self.theta_v = self.nc.THV
-        self.theta_0 = self.nc.TH0
-        self.phi_v = self.nc.PHIV
-        self.phi_0 = self.nc.PHI0
+        if dims:
+            self.dimensions = self.nc.dimensions
+            self.theta_v = self.nc.THV
+            self.theta_0 = self.nc.TH0
+            self.phi_v = self.nc.PHIV
+            self.phi_0 = self.nc.PHI0
         return self.nc
     
     def set_variables_list(self, netcdf_file):
@@ -199,7 +200,7 @@ class NetcdfVarModel(FileModel):
     def setup_var(self):
         self.full_path_var = os.path.join(self.dir_name, self.lc + self.path + self.row + self.time + self.misc+'_'+self.var_name+ '.nc')
 
-    def connect_to_nc(self):
+    def connect_to_nc(self, dims=False):
         # print("Connecting to NetCDF file")
         self.hit += 1
         # print("You have hit the NetCDF file %d times" % self.hit)
@@ -207,11 +208,12 @@ class NetcdfVarModel(FileModel):
         self.full_path = os.path.join(self.dir_name, self.file_name)
         print(self.full_path)
         self.nc = Dataset(self.full_path, 'r')
-        self.dimensions = self.nc.dimensions
-        self.theta_v = self.nc.THV
-        self.theta_0 = self.nc.TH0
-        self.phi_v = self.nc.PHIV
-        self.phi_0 = self.nc.PHI0
+        if dims:
+            self.dimensions = self.nc.dimensions
+            self.theta_v = self.nc.THV
+            self.theta_0 = self.nc.TH0
+            self.phi_v = self.nc.PHIV
+            self.phi_0 = self.nc.PHI0
         return self.nc
     
     def set_variables_list(self, netcdf_file):

@@ -49,13 +49,26 @@ def get_mask():
     # mask[np.where(mask==False)] = 1
     return mask
 
+def get_angles():
+    Scene = models.NetcdfVarModel(data_dir, path, row, time, 'BT_B10')
+    Scene.setup_file()
+    Scene.connect_to_nc()
+    scene_attributes = {}
+    scene_attributes['dimensions'] = Scene.dimensions
+    scene_attributes['theta_v'] = Scene.theta_v 
+    scene_attributes['theta_0 '] = Scene.theta_0 
+    scene_attributes['phi_v '] = Scene.phi_v 
+    scene_attributes['phi_0'] = Scene.phi_0 
+    return scene_attributes
+
+scene_attributes = get_angles()
 mask = get_mask()
 
-def get_var(var, mask=mask):
-    mask = utils.get_resized_array(mask, 2048) # get_mask()
+def get_var(var, mask=mask, resolution=2048):
+    mask = utils.get_resized_array(mask, resolution) # get_mask()
     result = get_var_before_mask(var)
 
-    result = utils.interp_and_resize(result, 2048)
+    result = utils.interp_and_resize(result, resolution)
     print(result.shape)
     result = ma.masked_where(mask==255, result)
     return result
@@ -307,7 +320,8 @@ def buffer_pcl(pcl):
     return dilated
 
 if __name__ == "__main__":
-    img_scaled = views.create_composite(get_red(), get_green(), get_blue())
+    # img_scaled = views.create_composite(get_red(), get_green(), get_blue())
+    scene_attributes = scene_attributes
     # pcp = calc_pcp()
     # water = water_test()
     # pcl = calc_pcl(pcp)
