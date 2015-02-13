@@ -52,7 +52,7 @@ def get_mask():
 def get_angles():
     Scene = models.NetcdfVarModel(data_dir, path, row, time, 'BT_B10')
     Scene.setup_file()
-    Scene.connect_to_nc()
+    Scene.connect_to_nc(dims=True)
     scene_attributes = {}
     scene_attributes['dimensions'] = Scene.dimensions
     scene_attributes['theta_v'] = Scene.theta_v 

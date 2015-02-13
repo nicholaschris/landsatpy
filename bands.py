@@ -12,10 +12,12 @@ imp.reload(utils)
 data_dir = config.data_dir
 path = config.path
 row = config.row
-time = '2014251' # config.time
+time = '2013280' # config.time
 
 band_option = config.band_option
 b = band_option
+resolution_global_var = config.resolution_global_var
+
 def get_var_before_mask(var):
     Scene = models.NetcdfVarModel(data_dir, path, row, time, var)
     # return utils.interp_and_resize(Scene.data(var), 2048)
@@ -36,8 +38,10 @@ def get_mask():
 
 def get_angles():
     Scene = models.NetcdfVarModel(data_dir, path, row, time, 'BT_B10')
+
     Scene.setup_file()
-    Scene.connect_to_nc()
+    print(Scene.full_path)
+    Scene.connect_to_nc(dims=True)
     scene_attributes = {}
     scene_attributes['dimensions'] = Scene.dimensions
     scene_attributes['theta_v'] = Scene.theta_v 
@@ -50,12 +54,21 @@ def get_angles():
 mask = get_mask()
 
 def get_var(var, mask=mask, resolution=2048):
-    mask = utils.get_resized_array(mask, resolution) # get_mask()
-    result = get_var_before_mask(var)
-
-    result = utils.interp_and_resize(result, resolution)
-    print(result.shape)
-    result = ma.masked_where(mask==255, result)
+    '''
+    Get the data from the requested variable band.
+    TODO:
+    Choose according to lat and lon values.
+    '''
+    if resolution_global_var:
+        mask = utils.get_resized_array(mask, resolution) # get_mask()
+        result = get_var_before_mask(var)
+    
+        result = utils.interp_and_resize(result, resolution)
+        print(result.shape)
+        result = ma.masked_where(mask==255, result)
+    else:
+        result = get_var_before_mask(var)
+        result = ma.masked_where(mask==255, result)
     return result
 
 def get_coastal():

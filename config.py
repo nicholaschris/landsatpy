@@ -48,5 +48,6 @@ path = '199'
 row = '024'
 time = '2013280'
 band_option = 'rhow_'
+resolution_global_var = False
 # band_option = 'rrc_'
 # band_option = 'rtoa_'

@@ -1,0 +1,38 @@
+Documents dot text
+
+Files can be Geotiff or Netcdf
+
+The nercdf files can come from acolite output
+
+Netcdf files can be subset already
+
+Models handles the file formats. They define how the data can be accessed.
+
+Controllers handle getting the data from the models.
+
+Other applications eg
+
+cloud_pixels
+water_pixels
+ice_pixels
+cloud_shadow_pixels
+
+... handle how the data (or bands) is used to do some analysis.
+
+Folder structure... path/row/scene/ then just use the filename... ie. the tiff files, the netcdf file the single netcdf files.
+
+Take 199 024 2013280 as the reference...
+Can extract BQA band from lat lon values in the singl netcdf...
+
+
+Actually need to be able to subset the scenes...
+Downsample scenes...
+
+Convert DN numbers in tiff files to rtoa and then atmospheric correction.
+
+## Structure
+
+- models.py the code for accessing the netcdf files and getting a variable.
+- bands.py - this is where the functions to access the bands from the netcdf files are.
+- pixel_indentification.py - calculate indexes like ndvi and ndsi, do tests to identify things. Makes a mask for clouds, water, ice/snow.
+- 
