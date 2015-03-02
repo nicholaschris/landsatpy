@@ -320,7 +320,7 @@ def buffer_pcl(pcl):
     return dilated
 
 if __name__ == "__main__":
-    # img_scaled = views.create_composite(get_red(), get_green(), get_blue())
+    img_scaled = views.create_composite(get_red(), get_green(), get_blue())
     scene_attributes = scene_attributes
     # pcp = calc_pcp()
     # water = water_test()

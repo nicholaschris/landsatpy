@@ -12,7 +12,9 @@ imp.reload(utils)
 data_dir = config.data_dir
 path = config.path
 row = config.row
-time = '2013280' # config.time
+time = config.time
+ul = config.ul
+len_sq = config.len_sq
 
 band_option = config.band_option
 b = band_option
@@ -21,7 +23,7 @@ resolution_global_var = config.resolution_global_var
 def get_var_before_mask(var):
     Scene = models.NetcdfVarModel(data_dir, path, row, time, var)
     # return utils.interp_and_resize(Scene.data(var), 2048)
-    return Scene.data(var)
+    return Scene.data(var, ul=ul, len_sq=len_sq)
     
 
 def get_mask():
@@ -112,3 +114,11 @@ def calc_ndvi():
     nir = get_nir()
     red = get_red()
     return (nir - red)/(nir + red)
+
+if __name__ == "__main__":
+    import views
+    blue = get_blue()
+    green = get_green()
+    red = get_red()
+    img_scaled = views.create_composite(red, green, blue)
+

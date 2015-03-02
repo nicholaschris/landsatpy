@@ -156,11 +156,15 @@ class NetcdfModel(FileModel):
         return _list
     
     def data(self, var_name):
+        '''
+        Get data from netcdf file to save on disk.
+        Can get subset of data by supplying upper left pixel and one side of square length.
+        '''
         self.setup_file()
         self.connect_to_nc()
         nc = self.nc
         if self.cropping == True:
-            result = np.array(nc.variables[var_name])[:1024,:1024]
+            result = np.array(nc.variables[var_name])
         else:
             result = np.array(nc.variables[var_name])
         # result = np.array(nc.variables[var_name])[-1024:,-1024:]
@@ -230,14 +234,14 @@ class NetcdfVarModel(FileModel):
         netcdf_file.close
         return _list
     
-    def data(self, var_name):
+    def data(self, var_name, ul=(1000,1000), len_sq=2000):
         self.setup_file()
         self.connect_to_nc()
         nc = self.nc
         if self.cropping == True:
-            result = np.array(nc.variables[var_name])[:1024,:1024]
+            result = np.array(nc.variables[var_name])[ul[0]:len_sq,ul[1]:len_sq]
         else:
-            result = np.array(nc.variables[var_name])
+            result = np.array(nc.variables[var_name])[ul[0]:ul[0]+len_sq,ul[1]:ul[1]+len_sq]
         # result = np.array(nc.variables[var_name])[-1024:,-1024:]
         # result = np.array(nc.variables[var_name])[:1024,:1024]
         nc.close()
