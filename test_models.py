@@ -8,15 +8,15 @@ imp.reload(models)
 home = os.path.expanduser("~")
 
 data_directory = 'Documents/data/' 
-path = '999'
-row = '999'
-time = '999999'
+path = '199' # '999'
+row =  '024' # '999'
+time = '2013280' # '999999'
 l8 = 'LC8'
 receiving_station = 'LGN'
 archive_version_number = '00'
 product_level = '_L2'
 file_type = 'nc'
-var = 'rtoa_1973'
+var = 'rtoa_1373'
 parent_directory = l8+path+row+time+receiving_station+archive_version_number
 file_name = parent_directory+product_level
 file_name_var = parent_directory
@@ -58,6 +58,7 @@ class NetcdfVarModelTest(unittest.TestCase):
         print(test_netcdf_file.full_path_var)
         test_full_path = os.path.join(home, data_directory, l8, path, row, l8+path+row+time+receiving_station+archive_version_number, '') +file_name_var+'_'+var+'.'+file_type
         print(test_full_path)
+        print("Is file: ", os.path.isfile(test_netcdf_file.full_path_var)) 
         self.assertEqual(test_netcdf_file.full_path_var, test_full_path)
 
 
