@@ -59,7 +59,7 @@ from views import create_composite, create_cm_greys, create_cm_orange, create_cm
 from skimage import exposure
 from matplotlib import pyplot as plt
 import matplotlib as mpl
-plt.style.use('ggplot')
+mpl.use('Agg')
 mpl.rcParams.update({'font.weight': 'light'})
 mpl.rcParams.update({'font.family': 'Arial'})
 mpl.rcParams.update({'font.size': 10})
