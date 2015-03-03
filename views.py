@@ -71,6 +71,15 @@ def create_cm_greys():
     theCM._lut[:-3,-1] = alphas
     return theCM
 
+def create_cm_blues():
+    from matplotlib import cm
+    import numpy as np
+    theCM = cm.get_cmap('Blues')
+    theCM._init() # this is a hack to get at the _lut array, which stores RGBA vals
+    alphas = np.abs(np.linspace(0, .9, theCM.N))
+    theCM._lut[:-3,-1] = alphas
+    return theCM
+
 def show_rgb():
     rgb = create_rgb()
     plt.imshow(rgb)

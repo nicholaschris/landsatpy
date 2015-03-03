@@ -1,6 +1,29 @@
 # config.py
 
+# defaults
+data_dir = "Documents/data/"
+band_option = 'rrc_'
+resolution_global_var = False
+ul = (1500,1500)
+len_sq = 4000
 
+# List of available scenes:
+
+# path = '012'
+# row = '054'
+# time = '2013154'
+
+# path = '199'
+# row = '024'
+# time = '2013280'
+# time = '2013232'
+# time = '2014251'
+
+path = '200'
+row = '024'
+time = '2014258'
+
+### End of list
 
 # data_dir = "Documents/data/"
 # path = '170'
@@ -43,14 +66,14 @@
 # row = '024'
 # time = '2014258'
 
-data_dir = "Documents/data/"
-path = '199'
-row = '024'
-time = '2013280'
-band_option = 'rhow_'
-band_option = 'rrc_'
-resolution_global_var = False
-ul = (1500,1500)
-len_sq = 4000
+# data_dir = "Documents/data/"
+# path = '199'
+# row = '024'
+# time = '2013280'
+# band_option = 'rhow_'
+# band_option = 'rrc_'
+# resolution_global_var = False
+# ul = (1500,1500)
+# len_sq = 4000
 # band_option = 'rrc_'
 # band_option = 'rtoa_'

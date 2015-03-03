@@ -1,87 +1,88 @@
-import models 
-import utils
-import views
+import cloud_detection_new as cloud_detection
+import utils 
 import numpy as np
 from numpy import ma
-import config
-import imp
+from skimage import morphology
+from skimage.morphology import reconstruction
 
-imp.reload(config)
-imp.reload(models)
-imp.reload(utils)
+nir = cloud_detection.get_nir()
+red = cloud_detection.get_red()
+green = cloud_detection.get_green()
+blue = cloud_detection.get_blue() # or use coastal
+coastal = cloud_detection.get_coastal()
+marine_shadow_index = (green-blue)/(green+blue)
 
-data_dir = config.data_dir
-path = config.path
-row = config.row
-time = config.time
+water = cloud_detection.water_test()
+pcp = cloud_detection.calc_pcp()
+pcl = cloud_detection.calc_pcl(pcp)
+bpcl = utils.dilate_boolean_array(pcl)
+clear_sky_land = np.logical_and(np.invert(bpcl), np.invert(water))
+csl_nir = ma.masked_where(np.invert(clear_sky_land), nir)
 
-band_option = config.band_option
-b = band_option
+def shadow_morphology_land(image, csl_nir=csl_nir):
+    image_shape = image.shape
+    _image = np.zeros((image_shape[0]+2, image_shape[1]+2))
+    _image[1:-1, 1:-1] = image
+    print(image_shape, _image.shape)
+    seed = np.copy(_image)
+    seed[1:-1, 1:-1] = image.max()
+    nir_low, nir_high = utils.calculate_percentile(csl_nir, 17.5), utils.calculate_percentile(csl_nir, 82.5)
+    print(image.max(), image.mean(), nir_low, image.min())
+    seed[0:1, :] = image.mean() # nir_low
+    seed[-1:, :] = image.mean() # nir_low
+    seed[:, 0:1] = image.mean() # nir_low
+    seed[:, -1:] = image.mean() # nir_low
+    mask = _image
+    filled = reconstruction(seed, mask, method='erosion')
+    result = filled - _image
+    return result[1:-1, 1:-1] #, result, seed, mask
 
-# Scene = models.NetcdfModel(data_dir, path, row, time)
-# Scene = models.NetcdfVarModel(data_dir, path, row, time, 'rtoa_1373')
+def shadow_morphology_water(image, csl_nir=csl_nir):
+    image_shape = image.shape
+    _image = np.zeros((image_shape[0], image_shape[1]))
+    _image = image
+    seed = np.copy(_image)
+    seed[1:-1, 1:-1] = image.max()
+    mask = _image
 
-def get_var_before_mask(var):
-    Scene = models.NetcdfVarModel(data_dir, path, row, time, var)
-    # return utils.interp_and_resize(Scene.data(var), 2048)
-    return Scene.data(var)
-    
-
-def get_mask():
-    mask = get_var_before_mask('BT_B10')
-    # mask[np.where(mask!=0)] = 99
-
-    mask[np.where(mask<200)] = 1e12
-    mask[np.where(mask<1e10)] = 0
-    mask[np.where(mask==1e12)] = 255
-    # mask = ma.masked_where(mask==0, mask)
-    # mask[np.where(mask==True)] = 0
-    # mask[np.where(mask==False)] = 1
-    return mask
-
-mask = get_mask()
-
-def get_var(var, mask=mask):
-    mask = utils.get_resized_array(mask, 2048) # get_mask()
-    result = get_var_before_mask(var)
-
-    result = utils.interp_and_resize(result, 2048)
-    print(result.shape)
-    result = ma.masked_where(mask==255, result)
+    filled = reconstruction(seed, mask, method='erosion')
+    result = filled - _image
     return result
 
-def get_coastal():
-    return get_var(b+'443')
+shadows_land = shadow_morphology_land(nir, csl_nir=csl_nir)
+shadows_water = shadow_morphology_water(marine_shadow_index, csl_nir=csl_nir)
 
-def get_blue():
-    return get_var(b+'483')
+land_shadow_mask = np.logical_and(shadows_land>0.02, clear_sky_land)
+water_shadow_mask = np.logical_and(shadows_water>0.02, water)
 
-def get_green():
-    return get_var(b+'561')
+from views import create_composite, create_cm_greys, create_cm_orange, create_cm_blues
+from skimage import exposure
+from matplotlib import pyplot as plt
+import matplotlib as mpl
+plt.style.use('ggplot')
+mpl.rcParams.update({'font.weight': 'light'})
+mpl.rcParams.update({'font.family': 'Arial'})
+mpl.rcParams.update({'font.size': 10})
 
-def get_red():
-    return get_var(b+'655')
+img = create_composite(red, green, blue)
+img = exposure.rescale_intensity(img, in_range=(0, 95))
 
-def get_nir():
-    return get_var(b+'865')
+output_dir = '/home/nicholas/Documents/highroc/output/'
 
-def get_swir():
-    return get_var(b+'1609')
+scene = cloud_detection.path+cloud_detection.row+cloud_detection.time
 
-def get_swir2():
-    return get_var(b+'2201')
+theCMB = create_cm_blues()
+theCMO = create_cm_orange()
+theCMG = create_cm_greys()
 
-def get_cirrus():
-    return get_var('rtoa_1373')
+plt.close('all')
+plt.imshow(img)
+plt.savefig(output_dir+scene+'-rgb.png', dpi=600)
 
-def get_temp():
-    return get_var('BT_B10')
+plt.close('all')
+plt.imshow(clear_sky_land, cmap=theCMG, alpha=0.4)
+plt.imshow(water_shadow_mask, cmap=theCMB)
+plt.imshow(land_shadow_mask, cmap=theCMG)
+plt.imshow(bpcl, cmap=theCMO)
 
-coastal = get_coastal()
-blue = get_blue()
-green = get_green()
-red = get_red()
-nir = get_nir()
-cirrus = get_cirrus()
-
-
+plt.savefig(output_dir+scene+'-mask.png', dpi=600)

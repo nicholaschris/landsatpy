@@ -1,3 +1,11 @@
+# 201503021128
+
+git branch naming best practices
+http://stackoverflow.com/questions/273695/git-branch-naming-best-practices
+
+new/feature/subset
+
+
 Documents dot text
 
 Files can be Geotiff or Netcdf
