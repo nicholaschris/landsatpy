@@ -4,6 +4,12 @@ import numpy as np
 from numpy import ma
 from skimage import morphology
 from skimage.morphology import reconstruction
+from views import create_composite, create_cm_greys, create_cm_orange, create_cm_blues
+from skimage import exposure
+
+import matplotlib as mpl
+mpl.use('Agg')
+from matplotlib import pyplot as plt
 
 nir = cloud_detection.get_nir()
 red = cloud_detection.get_red()
@@ -55,11 +61,7 @@ shadows_water = shadow_morphology_water(marine_shadow_index, csl_nir=csl_nir)
 land_shadow_mask = np.logical_and(shadows_land>0.02, clear_sky_land)
 water_shadow_mask = np.logical_and(shadows_water>0.02, water)
 
-from views import create_composite, create_cm_greys, create_cm_orange, create_cm_blues
-from skimage import exposure
-from matplotlib import pyplot as plt
-import matplotlib as mpl
-mpl.use('Agg')
+
 mpl.rcParams.update({'font.weight': 'light'})
 mpl.rcParams.update({'font.family': 'Arial'})
 mpl.rcParams.update({'font.size': 10})
