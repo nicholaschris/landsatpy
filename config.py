@@ -1,5 +1,17 @@
 # config.py
-
+import sys
+print("Trying to work out scene!")
+try:
+    scene_id = sys.argv[1]
+    print(scene_id)
+    input("Press Enter")
+    path = scene_id[3:6]
+    row = scene_id[6:9]
+    time = scene_id[9:16]
+    print(path, row, time)
+except IndexError as e:
+    print(e)
+ 
 # defaults
 data_dir = "Documents/data/"
 band_option = 'rrc_'
@@ -19,9 +31,9 @@ len_sq = 4000
 # time = '2013232'
 # time = '2014251'
 
-path = '200'
-row = '024'
-time = '2014258'
+#path = '200'
+#row = '024'
+#time = '2014258'
 
 ### End of list
 

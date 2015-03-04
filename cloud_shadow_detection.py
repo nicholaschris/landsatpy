@@ -34,10 +34,10 @@ def shadow_morphology_land(image, csl_nir=csl_nir):
     seed[1:-1, 1:-1] = image.max()
     nir_low, nir_high = utils.calculate_percentile(csl_nir, 17.5), utils.calculate_percentile(csl_nir, 82.5)
     print(image.max(), image.mean(), nir_low, image.min())
-    seed[0:1, :] = image.mean() # nir_low
-    seed[-1:, :] = image.mean() # nir_low
-    seed[:, 0:1] = image.mean() # nir_low
-    seed[:, -1:] = image.mean() # nir_low
+    seed[0:1, :] = image.max() #image.mean() # nir_low
+    seed[-1:, :] = image.max() #image.mean() # nir_low
+    seed[:, 0:1] = image.max() #image.mean() # nir_low
+    seed[:, -1:] = image.max() #image.mean() # nir_low
     mask = _image
     filled = reconstruction(seed, mask, method='erosion')
     result = filled - _image
