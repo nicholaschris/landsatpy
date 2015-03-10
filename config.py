@@ -10,14 +10,17 @@ try:
     time = scene_id[9:16]
     print(path, row, time)
 except IndexError as e:
+    path = '199'
+    row = '024'
+    time = '2013280'
     print(e)
  
 # defaults
 data_dir = "Documents/data/"
 band_option = 'rrc_'
 resolution_global_var = False
-ul = (1500,1500)
-len_sq = 4000
+ul = (1000,1000)
+len_sq = 5000
 
 # List of available scenes:
 

@@ -56,3 +56,5 @@ target/
 # python notebook stuff
 .ipynb_checkpoints/
 
+# other stuff
+test.nc

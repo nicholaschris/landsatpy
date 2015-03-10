@@ -58,6 +58,7 @@ class FileModel(DirectoryModel):
 
         
     def set_file_end(self):
+        print(self.file_type)
         if self.file_type == 'nc':
             self.file_end = '_L2.nc'
         elif self.file_type == 'tiff':
@@ -96,10 +97,13 @@ class GeotiffBandModel(FileModel):
         else:
             print("Error!")
             
-    def data(self,bounds):
+    def data(self, bounds):
         self.setup_file()
+        print(self.full_path)
         gdo = self.open_tiff(self.full_path)
         tiff_array = gdo.ReadAsArray(bounds[0], bounds[1], bounds[2], bounds[3])
+        # tiff_array = gdo.ReadAsArray()
+
         tiff_array = np.array(tiff_array, dtype=np.int16)
         [cols,rows] = tiff_array.shape
         trans       = gdo.GetGeoTransform()

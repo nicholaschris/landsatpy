@@ -1,12 +1,25 @@
 from bands import *
 
-def calc_basic_test():
+def cirrus_test():
+    cirrus = get_cirrus()
+    return cirrus>0.01
+
+def calc_basic_test_with_temp():
     band_7_test = utils.get_truth(get_swir2(), 0.03, '>')
     btc_test = utils.get_truth(utils.convert_to_celsius(get_temp()), 27.0, '<')
     ndsi_test = utils.get_truth(calc_ndsi(), 0.8, '<')
     ndvi_test = utils.get_truth(calc_ndvi(), 0.8, '<')
     basic_test = np.logical_and.reduce((band_7_test,
                                         btc_test,
+                                        ndsi_test,
+                                        ndvi_test))
+    return basic_test
+
+def calc_basic_test():
+    band_7_test = utils.get_truth(get_swir2(), 0.03, '>')
+    ndsi_test = utils.get_truth(calc_ndsi(), 0.8, '<')
+    ndvi_test = utils.get_truth(calc_ndvi(), 0.8, '<')
+    basic_test = np.logical_and.reduce((band_7_test,
                                         ndsi_test,
                                         ndvi_test))
     return basic_test
@@ -36,6 +49,7 @@ def calc_basic_and_whiteness():
 def calculate_hot_test():
     """
     Hot test results in omission of cloud pixels. Trying with RTOA.
+    Also sometimes produces funky results.
     """
     band = 'rtoa_'
     blue = get_var(band+'483')
@@ -53,7 +67,8 @@ def swirnir_test():
     return (nir/swir) > 0.75 # added by nick
 
 def calc_cirrus_prob():
-    pass
+    cirrus = get_cirrus()
+    return cirrus / 0.04
 
 def calc_pcp():
     return np.logical_and.reduce((calc_basic_test(),
@@ -102,8 +117,16 @@ def brightness_probability_water():
     brightness_prob = np.amin(_swir, axis=2)/0.11
     return  brightness_prob
     
-def cloud_prob_water():
+def cloud_prob_water_old():
     w_cloud_prob = temp_prob_water()*brightness_probability_water()
+    return w_cloud_prob
+
+def cloud_prob_water_new():
+    w_cloud_prob = brightness_probability_water() + calc_cirrus_prob()
+    return w_cloud_prob
+
+def cloud_prob_water():
+    w_cloud_prob = brightness_probability_water() + calc_cirrus_prob()
     return w_cloud_prob
 
 def clear_sky_land():
@@ -143,22 +166,36 @@ def variability_prob_land():
     variability_prob = 1 - np.amax(_var_prob, axis=2)
     return variability_prob*1.1 # added by nick
     
-def cloud_prob_land(): 
+def cloud_prob_land_old(): 
     l_cloud_prob = (temp_prob_land()*variability_prob_land())*1.1 # added by nick
+    return l_cloud_prob
+
+def cloud_prob_land_new(): 
+    l_cloud_prob = (calc_cirrus_prob()*variability_prob_land())
+    return l_cloud_prob
+
+def cloud_prob_land(): 
+    l_cloud_prob = (calc_cirrus_prob()*variability_prob_land())
     return l_cloud_prob
 
 def calc_csl_l_cloud_prob():
     cslcb = ma.masked_where(np.invert(clear_sky_land()), cloud_prob_land())
     return cslcb
 
+def water_threshold():
+    csl_w_cloud_prob = ma.masked_where(clear_sky_land(), cloud_prob_water())
+    water_threshold = utils.calculate_percentile(csl_w_cloud_prob, 82.5)  + 0.2 # added by nick
+    print("The water threshold is {0}.".format(water_threshold))
+    return water_threshold
+
 def land_threshold():
     csl_l_cloud_prob = ma.masked_where(np.invert(clear_sky_land()), cloud_prob_land())
     land_threshold = utils.calculate_percentile(csl_l_cloud_prob, 82.5)  + 0.2 # added by nick
-    print(land_threshold)
+    print("The land thrshold is {0}.".format(land_threshold))
     return land_threshold
 
 def pcl_cond_one(pcp):
-    condition_one = np.logical_and.reduce((pcp, water_test(), (cloud_prob_water()>0.5)))
+    condition_one = np.logical_and.reduce((pcp, water_test(), (cloud_prob_water()>water_threshold())))
     return condition_one
     
 def pcl_cond_two(pcp):
@@ -197,6 +234,7 @@ def calc_pcl(pcp):
 if __name__ == "__main__":
     water = water_test()
     pcp = calc_pcp()
+    cirrus = get_cirrus()
     pcl = calc_pcl(pcp)
     import views
     img = views.create_composite(get_red(), get_green(), get_blue())
